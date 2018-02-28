@@ -41,7 +41,7 @@ app.post('/move', (request, response) => {
   console.log(response);
   // NOTE: Do something here to generate your move
 
-  const counter = 0;
+  let counter = 0;
   // Response data
 
   if (counter % 2 === 0) {
