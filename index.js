@@ -1,8 +1,9 @@
-const bodyParser = require('body-parser');
-const express = require('express');
-const logger = require('morgan');
-const app = express();
-const {
+var bodyParser = require('body-parser');
+var express = require('express');
+var logger = require('morgan');
+var PF = require('pathfinding');
+var app = express();
+var {
   fallbackHandler,
   notFoundHandler,
   genericErrorHandler,
@@ -21,42 +22,101 @@ app.use(poweredByHandler);
 
 // --- SNAKE LOGIC GOES BELOW THIS LINE ---
 
+// Takes in object containing game details: width, height, id.
+var setBoardState = (width, height, snakeCoordinates) => {
+  board = new PF.Grid(width, height);
+  
+  if (snakeCoordinates.length > 0) {
+    snakeCoordinates.forEach((coordinate) => {
+        console.log("Snake coordinate: ");
+        console.log(coordinate);
+    });
+  }
+
+  return board;
+
+};
+
+// Takes in an array of snake objects.
+// Returns an array of coordinate objects for all snake positions.
+// To be used to mark positions as unwalkable in Pathfinding.
+var collectSnakeCoordinates = (snakes) => {
+
+  var snakeCoordinates = [];
+
+  // Loop over all snakes.
+  snakes.forEach((snake) => {
+
+    // Set variable to array of position objects
+    var snakePosition = snake.body.data;
+
+    // Add each coordinate snake occupies to collection of snake coordinates.
+    snakePosition.forEach((coordinate) => {
+      snakeCoordinates.push(coordinate);
+    });
+
+  });
+
+  return snakeCoordinates;
+
+};
+
 // Handle POST request to '/start'
 app.post('/start', (request, response) => {
   // NOTE: Do something here to start the game
 
+  // Board width, height and game id.
+  gameDetails = request.body;
+
+
+  // Pass gameDetails into a function to set initial board state.
+
   // Response data
-  const data = {
-    color: '#DFFF00',
-    head_url: 'http://www.placecage.com/c/200/200', // optional, but encouraged!
+  var data = {
+    color: '#FFFFFF',
+    head_url: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Acid-free_paper_%28symbol%29.svg', // optional, but encouraged!
     taunt: "Let's do thisss thang!", // optional, but encouraged!
   };
-
+  
   return response.json(data);
 });
 
+
 // Handle POST request to '/move'
 app.post('/move', (request, response) => {
-  console.log(request);
-  console.log(response);
-  // NOTE: Do something here to generate your move
 
-  let counter = 0;
-  // Response data
+  // The game provides us all this info about the state of board.
+  // We have to respond with our move: 'Up', 'Down', 'Left', or 'Right'.
 
-  if (counter % 2 === 0) {
-    const data = {
-      move: 'up', // one of: ['up','down','left','right']
-      taunt: 'Outta my way, snake!', // optional, but encouraged!
-    };
-  } else {
-    const data = {
-      move: 'right', // one of: ['up','down','left','right']
-      taunt: 'Outta my way, snake!', // optional, but encouraged!
-    };
-  }
+  var boardWidth = request.body.width;
+  var boardHeight = requst.body.height;
 
-  counter += 1;
+  // Variable to hold my snake's details.
+  var mySnake = request.body.you;
+
+  // Array filled with all snakes (including mine).
+  collectSnakeCoordinates(request.body.snakes.data);
+
+  console.log(snakeCoordinates);
+
+  // Take all snake coordinates and plot out a board to mark spots safe or unsafe
+
+  
+  var currentBoard = setBoardState(boardWidth, boardHeight, allSnakes);
+
+  console.log("Current board");
+  console.log(currentBoard);
+
+  // Return a board of safe and unsafe coordinates
+
+  
+  // The data variable which contains our move. 
+  // TODO: Make it update data.move based on board safety.
+
+  var data = {
+    move: 'up', // one of: ['up','down','left','right']
+    taunt: 'Come on you snakes, you wanna live forever?', // optional, but encouraged!
+  };
 
   return response.json(data);
 });
