@@ -38,7 +38,7 @@ app.post('/start', (request, response) => {
   var data = {
     color: '#FFFFFF',
     head_url: 'https://upload.wikimedia.org/wikipedia/commons/c/cc/Acid-free_paper_%28symbol%29.svg', // optional, but encouraged!
-    taunt: "Let's do thisss thang!", // optional, but encouraged!
+    taunt: "To infinity and beyond!", // optional, but encouraged!
   };
   
   return response.json(data);
@@ -82,6 +82,7 @@ app.post('/move', (request, response) => {
     });
 
   };
+  
   collectSnakeCoordinates(request.body.snakes.data);
   console.log(snakeCoordinates);
 
