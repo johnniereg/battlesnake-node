@@ -22,44 +22,7 @@ app.use(poweredByHandler);
 
 // --- SNAKE LOGIC GOES BELOW THIS LINE ---
 
-// Takes in object containing game details: width, height, id.
-var setBoardState = (width, height, snakeCoordinates) => {
-  board = new PF.Grid(width, height);
-  
-  if (snakeCoordinates.length > 0) {
-    snakeCoordinates.forEach((coordinate) => {
-        console.log("Snake coordinate: ");
-        console.log(coordinate);
-    });
-  }
 
-  return board;
-
-};
-
-// Takes in an array of snake objects.
-// Returns an array of coordinate objects for all snake positions.
-// To be used to mark positions as unwalkable in Pathfinding.
-var collectSnakeCoordinates = (snakes) => {
-
-  var snakeCoordinates = [];
-
-  // Loop over all snakes.
-  snakes.forEach((snake) => {
-
-    // Set variable to array of position objects
-    var snakePosition = snake.body.data;
-
-    // Add each coordinate snake occupies to collection of snake coordinates.
-    snakePosition.forEach((coordinate) => {
-      snakeCoordinates.push(coordinate);
-    });
-
-  });
-
-  return snakeCoordinates;
-
-};
 
 // Handle POST request to '/start'
 app.post('/start', (request, response) => {
@@ -85,31 +48,57 @@ app.post('/start', (request, response) => {
 // Handle POST request to '/move'
 app.post('/move', (request, response) => {
 
-  // The game provides us all this info about the state of board.
-  // We have to respond with our move: 'Up', 'Down', 'Left', or 'Right'.
+  var snakeCoordinates = [];
 
-  var boardWidth = request.body.width;
-  var boardHeight = requst.body.height;
+  var board;
 
-  // Variable to hold my snake's details.
-  var mySnake = request.body.you;
+  // Takes in object containing game details: width, height, id.
+  var setBoardState = (width, height, snakeCoordinates) => {
+    board = new PF.Grid(width, height);
+    if (snakeCoordinates.length > 0) {
+      snakeCoordinates.forEach((coordinate) => {
+        console.log("Snake coordinate: ");
+        console.log(coordinate);
+        board.setWalkableAt(coordinate.x, coordinate.y, false);
+      });
+    }
+  };
 
-  // Array filled with all snakes (including mine).
+  // Takes in an array of snake objects.
+  // Returns an array of coordinate objects for all snake positions.
+  // To be used to mark positions as unwalkable in Pathfinding.
+  var collectSnakeCoordinates = (snakes) => {
+    // Loop over all snakes.
+    snakes.forEach((snake) => {
+
+      // Set variable to array of position objects
+      var snakePosition = snake.body.data;
+
+      // Add each coordinate snake occupies to collection of snake coordinates.
+      snakePosition.forEach((coordinate) => {
+        snakeCoordinates.push(coordinate);
+      });
+
+    });
+
+  };
   collectSnakeCoordinates(request.body.snakes.data);
-
   console.log(snakeCoordinates);
 
-  // Take all snake coordinates and plot out a board to mark spots safe or unsafe
+  setBoardState(request.body.width, request.body.height, snakeCoordinates);
 
+
+
+  // Take all snake coordinates and plot out a board to mark spots safe or unsafe
   
-  var currentBoard = setBoardState(boardWidth, boardHeight, allSnakes);
+  // var currentBoard = setBoardState(boardWidth, boardHeight, coordinates);
 
   console.log("Current board");
-  console.log(currentBoard);
+  console.log(board.nodes);
 
-  // Return a board of safe and unsafe coordinates
 
-  
+
+
   // The data variable which contains our move. 
   // TODO: Make it update data.move based on board safety.
 
