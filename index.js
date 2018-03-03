@@ -82,7 +82,7 @@ app.post('/move', (request, response) => {
     });
 
   };
-  
+
   collectSnakeCoordinates(request.body.snakes.data);
   console.log(snakeCoordinates);
 
@@ -97,9 +97,6 @@ app.post('/move', (request, response) => {
   console.log("Current board");
   console.log(board.nodes);
 
-
-
-
   // The data variable which contains our move. 
   // TODO: Make it update data.move based on board safety.
 
@@ -109,6 +106,10 @@ app.post('/move', (request, response) => {
   };
 
   return response.json(data);
+});
+
+app.post('/end', (request, response) => {
+  return response.sendStatus(200);
 });
 
 // --- SNAKE LOGIC GOES ABOVE THIS LINE ---
